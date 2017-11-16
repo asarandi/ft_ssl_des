@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 22:20:45 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/15 16:33:49 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/15 21:04:27 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,17 +126,14 @@ void	cmd_base64(int ac, char **av)
 	else
 		input = getfilecontents(opt.input, &size);
 	if (opt.dec == 1)
-		output = base64decode(input, size);
+		output = base64decode(input, &size);
 	else
-		output = base64encode(input, size);
+		output = base64encode(input, &size);
 	free(input);
 	if ((opt.output == NULL) || ((opt.output) && (ft_strequ(opt.output,"-"))))
-	{
-		ft_putstr(output);
-		ft_putstr("\n");
-	}
+		write(1, output, size);
 	else
-		putfilecontents(opt.output, output, size);
+		putfilecontents(opt.output, output, size, 0);
 	free(output);
 }
 
@@ -162,14 +159,16 @@ int	parse_command(int ac, char **av)
 
 	cmd = av[1];
 	if (ft_strequ(cmd, "base64"))
-		return(cmd_base64(ac, av));
+		cmd_base64(ac, av);
 	else if (ft_strequ(cmd, "des-ecb"))
 		return(cmd_ecb(ac, av));
 	else if (ft_strequ(cmd, "des-cbc"))
 		return(cmd_cbc(ac, av));
 	else if (ft_strequ(cmd, "des"))
 		return(cmd_cbc(ac, av));
-	return(list_commands(ac, av));
+	else
+		return(list_commands(ac, av));
+	return (0);
 }
 
 int	main(int ac, char **av)
