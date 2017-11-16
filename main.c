@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 22:20:45 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/15 21:04:27 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/15 22:04:30 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,11 @@ void	cmd_base64(int ac, char **av)
 		output = base64encode(input, &size);
 	free(input);
 	if ((opt.output == NULL) || ((opt.output) && (ft_strequ(opt.output,"-"))))
+	{
 		write(1, output, size);
+		if (output[size - 1] != '\n')
+			write(1, "\n", 1);
+	}
 	else
 		putfilecontents(opt.output, output, size, 0);
 	free(output);
