@@ -6,22 +6,29 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 23:47:10 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/15 00:31:27 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/15 12:32:34 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl.h"
 
-void	ft_putstr(char const *s)
+size_t	ft_strlen(char const *s)
 {
 	size_t	i;
 
 	i = 0;
 	while (s[i])
 	{
-		write(1, &s[i], 1);
 		i++;
 	}
+	return (i);
+}
+void	ft_putstr(char const *s)
+{
+	size_t	size;
+
+	size = ft_strlen(s);
+	write(1, s, size);
 	return ;	
 }
 

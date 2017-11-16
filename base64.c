@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/27 20:14:04 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/15 02:48:33 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/15 12:42:39 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,11 @@ char	*b64enc_algo(size_t k, size_t size, char *output, unsigned char *s)
 	i = 0;
 	while (i < size)
 	{
-		c = s[i] >> 2;
-		output[k++] = tab[c];
+		output[k++] = tab[s[i] >> 2];
 		c = s[i++] << 6;
-		d = s[i] >> 4;
-		output[k++] = tab[(c >> 2) + d];
+		output[k++] = tab[(c >> 2) + (s[i] >> 4)];
 		c = s[i++] << 4;
-		d = s[i] >> 6;
-		output[k++] = tab[(c >> 2) + d];
+		output[k++] = tab[(c >> 2) + (s[i] >> 6)];
 		c = ((s[i++]) << 2);
 		output[k++] = tab[c >> 2];
 	}

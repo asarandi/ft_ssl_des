@@ -6,19 +6,29 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 22:20:45 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/15 02:56:56 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/15 16:33:49 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl.h"
 
-#define BUF_SIZE 1024
+void	init_options(t_cmd *opt)
+{
+	(*opt).enc = 0;
+	(*opt).dec = 0;
+	(*opt).b64 = 0;
+	(*opt).key = NULL;
+	(*opt).iv = NULL;
+	(*opt).input = NULL;
+	(*opt).output = NULL;
+}
 
 void	quit(int errnum, void *memory)
 {
 	if (memory != NULL)
 		free(memory);
 	ft_putstr(strerror(errnum));
+	ft_putstr("\n");
 	exit(EXIT_FAILURE);
 }
 
@@ -26,27 +36,71 @@ unsigned char	*read_stdin(size_t *count)
 {
 	unsigned char	*buffer;
 	unsigned char	*newbuf;
-	size_t	r;
+	ssize_t			r;
 
 	if ((buffer = ft_memalloc(BUF_SIZE)) == NULL)
 		quit(errno, NULL);
 	*count = 0;
-	r = BUF_SIZE;
+	r = 1;
 	while (r != 0)
 	{
-		if ((r = read(STDIN_FILENO, &buffer[*count], BUF_SIZE)) == -1)
+		if ((r = read(0, &buffer[*count], 1024 - (*count % 1024))) == -1)
 			quit(errno, buffer);
 		*count += r;
-		if (r == BUF_SIZE)
+		if ((*count) && (*count % BUF_SIZE == 0))
 		{
 			if ((newbuf = ft_memalloc(*count + BUF_SIZE)) == NULL)
 				quit(errno, buffer);
 			ft_memcpy(newbuf, buffer, *count);
 			free(buffer);
 			buffer = newbuf;
+			r = 1;
 		}
 	}
 	return (buffer);
+}
+
+void	show_options(char *s)
+{
+	ft_putstr("unknown option '");
+	ft_putstr(s);
+	ft_putstr("'\noptions are\n");
+	ft_putstr("-i <file>      input file\n");
+	ft_putstr("-o <file>      output file\n");
+	ft_putstr("-e             encrypt\n");
+	ft_putstr("-d             decrypt\n");
+	ft_putstr("-a             base64 encode/decode\n");
+	ft_putstr("-k             key in hex is the next argument\n");
+	ft_putstr("-v             iv in hex is the next argument\n");
+	exit(0);
+}
+
+void	get_options(int ac, char **av, t_cmd *opt)
+{
+	int		i;
+
+	init_options(opt);
+	i = 2;
+	while (i < ac)
+	{
+		if (ft_strequ(av[i], "-e"))
+			(*opt).enc = 1;
+		else if (ft_strequ(av[i], "-d"))
+			(*opt).dec = 1;
+		else if (ft_strequ(av[i], "-a"))
+			(*opt).b64 = 1;
+		else if ((ft_strequ(av[i], "-i")) && (av[i + 1]))
+			(*opt).input = av[++i];
+		else if ((ft_strequ(av[i], "-o")) && (av[i + 1]))
+			(*opt).output = av[++i];
+		else if ((ft_strequ(av[i], "-k")) && (av[i + 1]))
+			(*opt).key = av[++i];
+		else if ((ft_strequ(av[i], "-v")) && (av[i + 1]))
+			(*opt).iv = av[++i];
+		else
+			show_options(av[i]);
+		i++;
+	}
 }
 
 int	cmd_cbc(int ac, char **av)
@@ -59,20 +113,31 @@ int	cmd_ecb(int ac, char **av)
 	return (0);
 }
 
-int	cmd_base64(int ac, char **av)
+void	cmd_base64(int ac, char **av)
 {
 	size_t			size;
 	unsigned char	*input;
-	char			*output;
+	unsigned char	*output;
+	t_cmd	opt;
 
-	input = read_stdin(&size);
-	output = base64encode(input, size);
+	get_options(ac, av, &opt);
+	if ((opt.input == NULL) || ((opt.input) && (ft_strequ(opt.input,"-"))))
+		input = read_stdin(&size);
+	else
+		input = getfilecontents(opt.input, &size);
+	if (opt.dec == 1)
+		output = base64decode(input, size);
+	else
+		output = base64encode(input, size);
 	free(input);
-	ft_putstr(output);
+	if ((opt.output == NULL) || ((opt.output) && (ft_strequ(opt.output,"-"))))
+	{
+		ft_putstr(output);
+		ft_putstr("\n");
+	}
+	else
+		putfilecontents(opt.output, output, size);
 	free(output);
-
-	return (0);
-
 }
 
 int	list_commands(int ac, char **av)
