@@ -168,6 +168,7 @@ int main()
 	make_half_keys(c_half_keys, c0);
 	make_half_keys(d_half_keys, d0);
 	make_keys(keys, c_half_keys, d_half_keys);
+	ft_printf("  key0 is %048lb\n", keys[0]);
 //-----------------message-------------------//
 	ft_printf("message is %064lb\n", m);
 	m_ip = make_ip(m);
