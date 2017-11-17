@@ -1,6 +1,0 @@
-*.swp
-.*.swp
-*.o
-debug
-ft_ssl
-*.dSYM

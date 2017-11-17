@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/27 20:14:04 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/15 21:18:58 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/16 13:03:14 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,7 @@ unsigned char	*base64encode(unsigned char *input, size_t *size)
 	}
 	b64enc_algo(padded, output, *size);
 	*size = ft_strlen((char *)output);
+	output[(*size)++] = '\n';
 	free(padded);
 	return (output);
 }

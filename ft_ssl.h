@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 22:21:23 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/15 21:16:45 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/16 12:55:58 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	cmd_base64(int ac, char **av);
 void	ft_putstr(char const *s);
 void	get_options(int ac, char **av, t_cmd *opt);
 void	init_options(t_cmd *opt);
-void	putfilecontents(char *filename, t_uc *data, size_t size, int line);
+void	putfilecontents(char *filename, t_uc *data, size_t size);
 void	quit(int errnum, void *memory);
 void	show_options(char *s);
 

@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 22:31:25 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/15 21:30:07 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/16 12:51:58 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,29 +53,45 @@ void	*getfilecontents(char *filename, size_t *size)
 	return (NULL);
 }
 
-void	putfilecontents(char *filename, t_uc *data, size_t size, int line)
+/*
+**void	putfilecontents(char *filename, t_uc *data, size_t size, int line)
+**{
+**	int		fd;
+**	ssize_t	r;
+**	size_t	written;
+**
+**	if ((fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0644)) == -1)
+**		quit(errno, data);
+**	written = 0;
+**	while (written < size)
+**	{
+**		if (line == 0)
+**			line = size;
+**		else if ((line) && (line > size - written))
+**			line = size - written;
+**		if ((r = write(fd, &data[written], line)) == -1)
+**		{
+**			close(fd);
+**		quit(errno, data);
+**		}
+**		if (line != size)
+**			write(fd, "\n", 1);
+**		written += r;
+**	}
+**	close(fd);
+**}
+*/
+
+void	putfilecontents(char *filename, t_uc *data, size_t size)
 {
 	int		fd;
-	ssize_t	r;
-	size_t	written;
 
 	if ((fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, 0644)) == -1)
 		quit(errno, data);
-	written = 0;
-	while (written < size)
+	if ((write(fd, data, size)) == -1)
 	{
-		if (line == 0)
-			line = size;
-		else if ((line) && (line > size - written))
-			line = size - written;
-		if ((r = write(fd, &data[written], line)) == -1)
-		{
 			close(fd);
 		quit(errno, data);
-		}
-		if (line != size)
-			write(fd, "\n", 1);
-		written += r;
 	}
 	close(fd);
 }
