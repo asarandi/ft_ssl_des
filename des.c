@@ -191,6 +191,8 @@ int main()
 	unsigned long pp0;
 	t_ul	l0;
 	t_ul	r0;
+	t_ul	r1;
+	int	i;
 
 //	ft_printf("original %064lb\n", k);
 	kp = make_pc1(k);
@@ -208,17 +210,32 @@ int main()
 	ft_printf("message is %064lb\n", m);
 	m_ip = make_ip(m);
 	ft_printf("  after ip %064lb\n", m_ip);
+
+
+
 	l0 = (m_ip >> 32) & 0xffffffff;
 	r0 = m_ip & 0xffffffff;
-	ft_printf(" L0 is: %032lb\n", l0);
-	ft_printf(" R0 is: %032lb\n", r0);
-	er0 = make_e(r0);
-	ft_printf("ER0 is: %048lb\n", er0); //48 bits
-	ft_printf("XOR is: %048lb\n", er0 ^ keys[0]);
-	sb0 = get_s_boxes_value(er0 ^ keys[0]);
-	ft_printf("SB0 is: %032lb\n", sb0);
-	pp0 = make_pperm(sb0);
-	ft_printf("PP0 is: %032lb\n", pp0);
+
+	i = 0;
+	while (i < 16)
+	{
+//	ft_printf("L%02d is: %032lb\n", i, l0);
+//	ft_printf("R%02d is: %032lb\n", i, r0);
+		er0 = make_e(r0);
+//	ft_printf("ER0 is: %048lb\n", er0); //48 bits
+//	ft_printf("XOR is: %048lb\n", er0 ^ keys[i]);
+		ft_printf("K%02d is %048lb\n",i ,keys[i]);
+		sb0 = get_s_boxes_value(er0 ^ keys[i]);
+//	ft_printf("SB0 is: %032lb\n", sb0);
+		pp0 = make_pperm(sb0);
+//	ft_printf("PP0 is: %032lb\n", pp0);
+		r1 = l0 ^ pp0;
+		l0 = r0;
+		r0 = r1;
+		i++;
+	}
+	ft_printf("L%02d is: %032lb\n",i, l0);
+	ft_printf("R%02d is: %032lb\n",i, r1);
 
 
 }
