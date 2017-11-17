@@ -1,4 +1,5 @@
 #include "../ft_printf/libftprintf.h"
+#include "des.h"
 
 typedef	unsigned long	t_ul;
 typedef unsigned char	t_uc;
@@ -9,20 +10,11 @@ unsigned long	make_pc1(unsigned long k)
 	unsigned long tmp = 0;
 	unsigned long i = 0;
 
-	unsigned long pc1_table[] = {
-              57,   49,    41,   33,    25,    17,    9,
-               1,   58,    50,   42,    34,    26,   18,
-              10,    2,    59,   51,    43,    35,   27,
-              19,   11,     3,   60,    52,    44,   36,
-              63,   55,    47,   39,    31,    23,   15,
-               7,   62,    54,   46,    38,    30,   22,
-              14,    6,    61,   53,    45,    37,   29, 
-              21,   13,     5,   28,    20,    12,    4};
 	r = 0;
 	i = 0;
-	while (i < 56)
+	while (i < sizeof(g_pc1_table))
 	{
-		tmp = (k >> (64 - pc1_table[i])) & 1;
+		tmp = (k >> (64 - g_pc1_table[i])) & 1;
 		tmp = tmp << (63 - i);
 		r += tmp;
 		i++;
@@ -75,15 +67,6 @@ void	make_half_keys(t_ul half_keys[16], t_ul starter)
 
 t_ul	make_pc2(t_ul c_half, t_ul d_half)
 {
-	t_uc	pc2_table[] = {
-                 14,    17,   11,    24,     1,    5,
-                  3,    28,   15,     6,    21,   10,
-                 23,    19,   12,     4,    26,    8,
-                 16,     7,   27,    20,    13,    2,
-                 41,    52,   31,    37,    47,   55,
-                 30,    40,   51,    45,    33,   48,
-                 44,    49,   39,    56,    34,   53,
-                 46,    42,   50,    36,    29,   32};
 	t_ul	before;
 	t_ul	after;
 	int		i;
@@ -93,10 +76,10 @@ t_ul	make_pc2(t_ul c_half, t_ul d_half)
 	i = 0;
 	after = 0;
 //	ft_printf("before pc2, two halves: %064lb\n", before);
-	while (i < sizeof(pc2_table))
+	while (i < sizeof(g_pc2_table))
 	{
 		after <<= 1;
-		after += ((before >> (56 - pc2_table[i])) & 1);
+		after += ((before >> (56 - g_pc2_table[i])) & 1);
 		i++;
 	}
 	return (after);
@@ -117,30 +100,79 @@ void	make_keys(t_ul keys[16], t_ul c_half[16], t_ul d_half[16])
 
 t_ul	make_ip(unsigned long m)
 {
-	t_uc	ip_table[] = {
-            58,    50,   42,    34,    26,   18,    10,    2,
-            60,    52,   44,    36,    28,   20,    12,    4,
-            62,    54,   46,    38,    30,   22,    14,    6,
-            64,    56,   48,    40,    32,   24,    16,    8,
-            57,    49,   41,    33,    25,   17,     9,    1,
-            59,    51,   43,    35,    27,   19,    11,    3,
-            61,    53,   45,    37,    29,   21,    13,    5,
-            63,    55,   47,    39,    31,   23,    15,    7};
-	
 	unsigned long result;
 	int	i;
 
 	i = 0;
 	result = 0;
-	while (i < 64)
+	while (i < sizeof(g_ip1_table))
 	{
 		result <<= 1;
-		result += (m >> (64 - ip_table[i])) & 1;
+		result += (m >> (64 - g_ip1_table[i])) & 1;
 		i++;
 	}
 	return (result);
 }
 
+
+t_ul	make_e(unsigned long r0)
+{
+	unsigned long result;
+	unsigned long tmp;
+	int i;
+
+	i = 0;
+	result = 0;
+	while (i < sizeof(g_ebit_table))
+	{
+		tmp = r0 >> (32 - g_ebit_table[i]);
+		tmp &= 1;
+		result <<= 1;
+		result += tmp;
+		i++;
+	}
+	return (result);
+}
+
+
+unsigned long	get_s_boxes_value(unsigned long xor0)
+{
+	int		i;
+	int		row;
+	int		col;
+	t_ul	tmp;
+	t_ul	result;
+
+	i = 0;
+	result = 0;
+	while(i < 8)
+	{
+		tmp = (xor0 >> (42 - (i * 6))) & 0x3f;
+		row = ((tmp >> 4) & 2) + (tmp & 1);
+		col = (tmp >> 1) & 0xf;
+		tmp = g_s_boxes[i][(row * 16) + col];
+		tmp <<= (28 - (i * 4));
+		result += tmp;
+		i++;
+	}
+	return (result);
+}
+
+unsigned long	make_pperm(unsigned long sb0)
+{
+	int				i;
+	unsigned long	result;
+
+	i = 0;
+	result = 0;
+	while (i < 32)
+	{
+		result <<= 1;
+		result += (sb0 >> (32 - g_pperm_table[i])) & 1;
+		i++;
+	}
+	return (result);
+}
 
 int main()
 {
@@ -154,6 +186,9 @@ int main()
 	unsigned long c_half_keys[16];
 	unsigned long d_half_keys[16];
 	unsigned long keys[16];
+	unsigned long er0;
+	unsigned long sb0;
+	unsigned long pp0;
 	t_ul	l0;
 	t_ul	r0;
 
@@ -177,5 +212,13 @@ int main()
 	r0 = m_ip & 0xffffffff;
 	ft_printf(" L0 is: %032lb\n", l0);
 	ft_printf(" R0 is: %032lb\n", r0);
+	er0 = make_e(r0);
+	ft_printf("ER0 is: %048lb\n", er0); //48 bits
+	ft_printf("XOR is: %048lb\n", er0 ^ keys[0]);
+	sb0 = get_s_boxes_value(er0 ^ keys[0]);
+	ft_printf("SB0 is: %032lb\n", sb0);
+	pp0 = make_pperm(sb0);
+	ft_printf("PP0 is: %032lb\n", pp0);
+
 
 }
