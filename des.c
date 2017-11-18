@@ -1,3 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   des.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/11/17 16:55:34 by asarandi          #+#    #+#             */
+/*   Updated: 2017/11/17 18:15:07 by asarandi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+
 #include "../ft_printf/libftprintf.h"
 #include "des.h"
 
@@ -93,7 +106,7 @@ void	make_keys(t_ul keys[16], t_ul c_half[16], t_ul d_half[16])
 	while (i < 16)
 	{
 		keys[i] = make_pc2(c_half[i], d_half[i]);
-//	ft_printf("       index %02d, key is %048lb\n", i, keys[i]);
+	ft_printf("       index %02d, key is %048lb\n", i, keys[i]);
 		i++;
 	}
 }
@@ -123,7 +136,7 @@ t_ul	make_e(unsigned long r0)
 
 	i = 0;
 	result = 0;
-	while (i < sizeof(g_ebit_table))
+	while (i < 48)
 	{
 		tmp = r0 >> (32 - g_ebit_table[i]);
 		tmp &= 1;
@@ -148,10 +161,10 @@ unsigned long	get_s_boxes_value(unsigned long xor0)
 	while(i < 8)
 	{
 		tmp = (xor0 >> (42 - (i * 6))) & 0x3f;
-		row = ((tmp >> 4) & 2) + (tmp & 1);
+		row = ((tmp >> 5) << 1) + (tmp & 1);
 		col = (tmp >> 1) & 0xf;
-		tmp = g_s_boxes[i][(row * 16) + col];
-		tmp <<= (28 - (i * 4));
+		tmp = g_s_boxes[i][row * 16 + col];
+		result <<= 4;
 		result += tmp;
 		i++;
 	}
@@ -161,14 +174,35 @@ unsigned long	get_s_boxes_value(unsigned long xor0)
 unsigned long	make_pperm(unsigned long sb0)
 {
 	int				i;
+	unsigned long	tmp;
 	unsigned long	result;
 
 	i = 0;
 	result = 0;
 	while (i < 32)
 	{
+		tmp = (sb0 >> (32 - g_pperm_table[i])) & 1;
 		result <<= 1;
-		result += (sb0 >> (32 - g_pperm_table[i])) & 1;
+		result += tmp;
+		i++;
+	}
+	return (result);
+}
+
+unsigned long	make_ip2(unsigned long rxlx)
+{
+	int				i;
+	unsigned long	tmp;
+	unsigned long	result;
+
+	i = 0;
+	result = 0;
+	while (i < 64)
+	{
+		tmp = rxlx >> (64 - g_ip2_table[i]);
+		tmp &= 1;
+		result <<= 1;
+		result += tmp;
 		i++;
 	}
 	return (result);
@@ -192,20 +226,21 @@ int main()
 	t_ul	l0;
 	t_ul	r0;
 	t_ul	r1;
+	t_ul	result;
 	int	i;
 
-//	ft_printf("original %064lb\n", k);
+	ft_printf("original %064lb\n", k);
 	kp = make_pc1(k);
-//	ft_printf("permuted %064lb\n", kp);
+	ft_printf("permuted %064lb\n", kp);
 	c0 = kp >> 36;
 
-	ft_printf("   c0 is %028lb\n", c0);
+//	ft_printf("   c0 is %028lb\n", c0);
 	d0 = (kp << 28) >> 36;
-	ft_printf("   d0 is %028lb\n", d0);
+//	ft_printf("   d0 is %028lb\n", d0);
 	make_half_keys(c_half_keys, c0);
 	make_half_keys(d_half_keys, d0);
 	make_keys(keys, c_half_keys, d_half_keys);
-	ft_printf("  key0 is %048lb\n", keys[0]);
+//	ft_printf("  key0 is %048lb\n", keys[0]);
 //-----------------message-------------------//
 	ft_printf("message is %064lb\n", m);
 	m_ip = make_ip(m);
@@ -219,16 +254,17 @@ int main()
 	i = 0;
 	while (i < 16)
 	{
-//	ft_printf("L%02d is: %032lb\n", i, l0);
-//	ft_printf("R%02d is: %032lb\n", i, r0);
-		er0 = make_e(r0);
-//	ft_printf("ER0 is: %048lb\n", er0); //48 bits
-//	ft_printf("XOR is: %048lb\n", er0 ^ keys[i]);
-		ft_printf("K%02d is %048lb\n",i ,keys[i]);
-		sb0 = get_s_boxes_value(er0 ^ keys[i]);
-//	ft_printf("SB0 is: %032lb\n", sb0);
+//		ft_printf("L%02d is: %064lb\n", i, l0);
+//		ft_printf("R%02d is: %064lb\n", i, r0);
+		er0 = make_e(r0); //expand r0 to 48 bits
+//		ft_printf("ER0 is: %064lb\n", er0); //48 bits
+		er0 ^= keys[i];
+//		ft_printf("XOR is: %064lb\n", er0); //xor expanded(r0) with key
+//		ft_printf("K%02d is: %064lb\n",i ,keys[i]);
+		sb0 = get_s_boxes_value(er0);       //back to 32 bits using s-boxes
+//		ft_printf("SB0 is: %064lb\n", sb0);
 		pp0 = make_pperm(sb0);
-//	ft_printf("PP0 is: %032lb\n", pp0);
+//		ft_printf("PP0 is: %032lb\n", pp0);
 		r1 = l0 ^ pp0;
 		l0 = r0;
 		r0 = r1;
@@ -236,6 +272,10 @@ int main()
 	}
 	ft_printf("L%02d is: %032lb\n",i, l0);
 	ft_printf("R%02d is: %032lb\n",i, r1);
-
+	result = (r1 << 32) + l0;
+	ft_printf("X   is: %064lb\n", result);
+	result = make_ip2(result);
+	ft_printf("Z   is: %064lb\n", result);
+	ft_printf("HEX is: %lX\n", result);
 
 }
