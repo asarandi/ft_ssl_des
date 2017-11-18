@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 22:20:45 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/16 12:54:00 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/18 01:48:16 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,13 +103,63 @@ void	get_options(int ac, char **av, t_cmd *opt)
 	}
 }
 
+void get_input(t_cmd *opt, unsigned char **input, size_t *size)
+{
+	if (((*opt).input == NULL) || 
+			(((*opt).input) && (ft_strequ((*opt).input,"-"))))
+		*input = read_stdin(size);
+	else
+		*input = getfilecontents((*opt).input, size);
+}
+
 int	cmd_cbc(int ac, char **av)
 {
 	return (0);
 }
 
+
+unsigned long	ecb_read_password()
+{
+	unsigned char	*pw1;
+	unsigned char	*pw2;
+	unsigned long	mk1;
+	unsigned long	mk2;
+
+	pw1 = read_stdin(&mk1);//getpass("enter des-ecb encryption password:");
+	mk1 = text_to_ul64((char *)pw1);
+	pw2 = read_stdin(&mk2);//getpass("Verifying - enter des-ecb encryption password:");
+	mk2 = text_to_ul64((char *)pw2);
+	if (mk1 == mk2)
+	{
+		return(mk1);
+	}
+	ft_putstr("Verify failure\nbad password read\n");
+	exit(0);
+	return (0);
+}
+
+unsigned long	ecb_process_key(t_cmd *opt)
+{
+	return (0);
+}
+
+
 int	cmd_ecb(int ac, char **av)
 {
+	unsigned long	master_key;
+	t_cmd			opt;
+
+	get_options(ac, av, &opt);
+	
+	if (opt.key == NULL)
+		master_key = ecb_read_password();
+	else
+		master_key = ecb_process_key(&opt);
+
+
+
+
+
 	return (0);
 }
 
@@ -118,13 +168,10 @@ void	cmd_base64(int ac, char **av)
 	size_t			size;
 	unsigned char	*input;
 	unsigned char	*output;
-	t_cmd	opt;
+	t_cmd			opt;
 
 	get_options(ac, av, &opt);
-	if ((opt.input == NULL) || ((opt.input) && (ft_strequ(opt.input,"-"))))
-		input = read_stdin(&size);
-	else
-		input = getfilecontents(opt.input, &size);
+	get_input(&opt, &input, &size);
 	if (opt.dec == 1)
 		output = base64decode(input, &size);
 	else
@@ -135,6 +182,7 @@ void	cmd_base64(int ac, char **av)
 	else
 		putfilecontents(opt.output, output, size);
 	free(output);
+
 }
 
 int	list_commands(int ac, char **av)
@@ -165,7 +213,7 @@ int	parse_command(int ac, char **av)
 	else if (ft_strequ(cmd, "des-cbc"))
 		return(cmd_cbc(ac, av));
 	else if (ft_strequ(cmd, "des"))
-		return(cmd_cbc(ac, av));
+		return(cmd_ecb(ac, av));
 	else
 		return(list_commands(ac, av));
 	return (0);

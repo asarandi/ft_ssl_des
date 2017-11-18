@@ -1,0 +1,82 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    thoughts.txt                                       :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2017/11/17 21:53:25 by asarandi          #+#    #+#              #
+#    Updated: 2017/11/17 22:28:26 by asarandi         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+the subject pdf file is not very clear; 
+its asking to implement the -k flag,
+next argument after '-k' is supposed to a key in hex - 64 bits (16 digits) -
+like openssl -K flag;
+then it mentions "cleartext keys" and that those should be padded if key is
+too short; cleartext keys must be something else, because openssl does not
+pad the '-K' hex key, see below:
+
+------------------------------------------------------------------------------
+e1z2r4p31% echo "hello" | openssl des-ecb -a -K 12 
+kkMwM8r1Qd4=
+e1z2r4p31% echo "hello" | openssl des-ecb -a -K 120
+kkMwM8r1Qd4=
+e1z2r4p31% echo "hello" | openssl des-ecb -a -K 1200
+kkMwM8r1Qd4=
+e1z2r4p31% echo "hello" | openssl des-ecb -a -K 12000000
+kkMwM8r1Qd4=
+e1z2r4p31% echo "hello" | openssl des-ecb -a -K 120000000000
+kkMwM8r1Qd4=
+e1z2r4p31% echo "hello" | openssl des-ecb -a -K 1200000000000000   
+kkMwM8r1Qd4=
+e1z2r4p31% echo "hello" | openssl des-ecb -a -K 1212121212121212
+pe0KRJEWCyc=
+-----------------------------------------------------------------------------
+
+in the first line the K is only 2 characters, then i add zero's at the end
+and the output does not change, if i try to pad with same values '12'
+the output does change; 
+that means openssl is padding short -K input with zeros.
+
+
+
+e1z2r4p31% echo "hello" | openssl des-ecb -p -a -k cat
+salt=F7F1767B547FD1F6
+key=737763AB8AFF8962
+U2FsdGVkX1/38XZ7VH/R9geW78OOeOmh
+e1z2r4p31% echo "hello" | openssl des-ecb -p -a -k catcat
+salt=1BE3F0533BFE7407
+key=A75B9684C2F543D0
+U2FsdGVkX18b4/BTO/50BxpZK0m08Cpg
+e1z2r4p31% echo "hello" | openssl des-ecb -p -a -k catcatca
+salt=47DEF480DB9D9FEA
+key=1890CF9BF3F58684
+U2FsdGVkX19H3vSA252f6v+kS/lYAEJm
+
+
+e1z2r4p31% echo "hello" | openssl des-ecb -p -a -pass pass:cat
+salt=73708CF658C98A6F
+key=8D265B1132F887A8
+U2FsdGVkX19zcIz2WMmKb+fczSPLKlrz
+e1z2r4p31% echo "hello" | openssl des-ecb -p -a -pass pass:catcat
+salt=7B3262639E8BF0E8
+key=0F69A5287370FAF6
+U2FsdGVkX197MmJjnovw6LvkikmXfEI+
+e1z2r4p31% echo "hello" | openssl des-ecb -p -a -pass pass:catcatca 
+salt=FE2194200E1259D2
+key=8182F08B37B5F06C
+U2FsdGVkX1/+IZQgDhJZ0vx822jEXosd
+
+
+
+
+
+
+
+
+
+
+
+####

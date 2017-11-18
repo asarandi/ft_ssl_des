@@ -6,11 +6,25 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 23:47:10 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/15 12:32:34 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/17 23:39:04 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl.h"
+
+char	*ft_strtolower(char *s)
+{
+	int	i;
+
+	i = 0;
+	while (s[i])
+	{
+		if ((s[i] >= 'A') && (s[i] <= 'Z'))
+			s[i] += 32;
+		i++;
+	}
+	return (s);
+}
 
 size_t	ft_strlen(char const *s)
 {
@@ -23,6 +37,7 @@ size_t	ft_strlen(char const *s)
 	}
 	return (i);
 }
+
 void	ft_putstr(char const *s)
 {
 	size_t	size;
