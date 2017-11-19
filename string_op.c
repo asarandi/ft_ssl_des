@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 23:47:10 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/18 13:13:51 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/19 01:57:58 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ unsigned char	*ft_strtolower(unsigned char *s)
 	return (s);
 }
 
-size_t	ft_strlen(char const *s)
+size_t			ft_strlen(char const *s)
 {
 	size_t	i;
 
@@ -38,16 +38,16 @@ size_t	ft_strlen(char const *s)
 	return (i);
 }
 
-void	ft_putstr(char const *s)
+void			ft_putstr(char const *s)
 {
 	size_t	size;
 
 	size = ft_strlen(s);
 	write(1, s, size);
-	return ;	
+	return ;
 }
 
-int		ft_strequ(char const *s1, char const *s2)
+int				ft_strequ(char const *s1, char const *s2)
 {
 	size_t	i;
 

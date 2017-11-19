@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/18 00:05:45 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/18 18:04:50 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/19 01:59:37 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,6 @@ unsigned long	text_to_ul64(unsigned char *s)
 	return (result);
 }
 
-
 unsigned long	hex_to_ul64_openssl(unsigned char *s)
 {
 	int				i;
@@ -63,6 +62,7 @@ unsigned long	hex_to_ul64_openssl(unsigned char *s)
 	s = ft_strtolower(s);
 	i = 0;
 	j = 0;
+	result = 0;
 	while (i < 16)
 	{
 		c = s[j];
@@ -81,13 +81,14 @@ unsigned long	hex_to_ul64_openssl(unsigned char *s)
 unsigned long	hex_to_ul64(unsigned char *s)
 {
 	int				i;
-	int				j;
+	size_t			j;
 	unsigned long	result;
 	unsigned char	c;
 
 	s = ft_strtolower(s);
 	i = 0;
 	j = 0;
+	result = 0;
 	while (i < 16)
 	{
 		c = s[j++];

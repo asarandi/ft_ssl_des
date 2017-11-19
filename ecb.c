@@ -6,42 +6,36 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/17 21:17:29 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/18 19:14:41 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/19 01:55:19 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl.h"
-//#include "../ft_printf/libftprintf.h"
-//#include <stdio.h>
 
-unsigned long ecb_process_block(t_ul input, t_ul keys[16])
+unsigned long	ecb_process_block(t_ul input, t_ul keys[16])
 {
-	unsigned long m_ip;
-	unsigned long sb0;
-	t_ul	l0;
-	t_ul	r0;
-	t_ul	r1;
-	t_ul	result;
-	int	i;
+	unsigned long	norme;
+	unsigned long	left0;
+	unsigned long	right0;
+	unsigned long	right1;
+	int				i;
 
-	m_ip = make_ip1(input);
-	l0 = (m_ip >> 32) & 0xffffffff;
-	r0 = m_ip & 0xffffffff;
+	norme = make_ip1(input);
+	left0 = (norme >> 32) & 0xffffffff;
+	right0 = norme & 0xffffffff;
 	i = 0;
 	while (i < 16)
 	{
-		sb0 = get_s_boxes_value(make_ebit(r0) ^ keys[i]);
-		r1 = l0 ^ make_pperm(sb0);
-		l0 = r0;
-		r0 = r1;
+		norme = get_s_boxes_value(make_ebit(right0) ^ keys[i]);
+		right1 = left0 ^ make_pperm(norme);
+		left0 = right0;
+		right0 = right1;
 		i++;
 	}
-	result = (r1 << 32) + l0;
-	result = make_ip2(result);
-	return (result);
+	return (make_ip2((right1 << 32) + left0));
 }
 
-unsigned long ecb_get_eight_bytes(t_uc *data)
+unsigned long	ecb_get_eight_bytes(unsigned char *data)
 {
 	unsigned long	result;
 	int				i;
@@ -57,7 +51,7 @@ unsigned long ecb_get_eight_bytes(t_uc *data)
 	return (result);
 }
 
-void ecb_put_eight_bytes(t_uc *data, t_ul ul64)
+void			ecb_put_eight_bytes(unsigned char *data, t_ul ul64)
 {
 	unsigned char	c;
 	int				i;
@@ -71,13 +65,13 @@ void ecb_put_eight_bytes(t_uc *data, t_ul ul64)
 	}
 }
 
-void ecb_crypto(t_uc **input, size_t size, t_ul master_key, int action)
+void			ecb_crypto(t_uc **input, size_t size, t_ul mk, int enc)
 {
-	unsigned long data;
-	unsigned long keys[16];
+	unsigned long	data;
+	unsigned long	keys[16];
 	size_t			i;
 
-	make_keys(keys, master_key, action);
+	make_keys(keys, mk, enc);
 	i = 0;
 	while (i < size)
 	{
@@ -87,18 +81,3 @@ void ecb_crypto(t_uc **input, size_t size, t_ul master_key, int action)
 		i += 8;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-//	ft_printf("result   is: %064lb\n", result);
-//	printf("HEX is: %lX\n", result);
-//	return (0);
-//}

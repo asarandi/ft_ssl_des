@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/27 20:14:04 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/16 13:03:14 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/19 01:38:50 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ unsigned char	b64index(unsigned char c, t_uc *input, t_uc *output)
 	exit(-1);
 }
 
-size_t	b64dec_algo(t_uc *input, t_uc *output, size_t size)
+size_t			b64dec_algo(t_uc *input, t_uc *output, size_t size)
 {
 	unsigned char	c;
 	size_t			i;
@@ -69,13 +69,12 @@ unsigned char	*base64decode(unsigned char *input, size_t *size)
 	if ((output = ft_memalloc(i + 6)) == NULL)
 		quit(errno, input);
 	*size = b64dec_algo(input, output, *size);
-	return(output);
+	return (output);
 }
 
-void	b64enc_algo(t_uc *input, t_uc *output, size_t size)
+void			b64enc_algo(t_uc *input, t_uc *output, size_t size)
 {
 	unsigned char	c;
-	unsigned char	d;
 	static char		*tab;
 	size_t			i;
 	size_t			k;

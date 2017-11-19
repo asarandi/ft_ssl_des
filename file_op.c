@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 22:31:25 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/18 23:33:53 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/19 01:57:06 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	*getfilecontents(char *filename, size_t *size)
 	int				fd;
 	unsigned char	*mem;
 
-	if ((*size = getfilesize(filename)) == -1)
+	if ((int)(*size = getfilesize(filename)) == -1)
 		quit(errno, NULL);
 	if ((mem = ft_memalloc(*size + 1)) == NULL)
 		quit(errno, NULL);
@@ -45,7 +45,7 @@ void	*getfilecontents(char *filename, size_t *size)
 	{
 		r = read(fd, mem, *size);
 		close(fd);
-		if (r == *size)
+		if (r == (ssize_t)*size)
 			return (mem);
 	}
 	free(mem);
@@ -61,7 +61,7 @@ void	putfilecontents(char *filename, t_uc *data, size_t size)
 		quit(errno, data);
 	if ((write(fd, data, size)) == -1)
 	{
-			close(fd);
+		close(fd);
 		quit(errno, data);
 	}
 	close(fd);
