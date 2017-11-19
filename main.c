@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 22:20:45 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/18 20:08:25 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/18 23:35:05 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,8 +164,8 @@ void	ecb_hex_key_invalid_format(void *memory)
 **  so key '123' in openssl would be 0x1230000000000000
 **  and key 'ABCD' in openssl wouble be 0xabcd000000000000
 **
-**  to make the project compatible with openssl
-**  change 'hex_to_ul64' to 'hex_to_ul64_openssl'
+**  to make the project compatible with subject.pdf
+**  change 'hex_to_ul64_openssl' to 'hex_to_ul64'
 **
 **  use the -p option to show the key being used
 */
@@ -205,8 +205,14 @@ void	ecb_print_key(unsigned long master_key)
 	ft_putstr("\n");
 }
 
+/*
+**  the subject is asking to use 0's for padding bytes
+**  however openssl uses the size difference byte for padding
+**  to make project compatible with subject.pdf
+**  change "pad_byte = new_size - *size;" to "pad_byte = 0;"
+*/
 
-void ecb_process_input(t_cmd *opt, t_uc **input, t_uc **output, size_t *size)
+void ecb_encrypt_input(t_cmd *opt, t_uc **input, t_uc **output, size_t *size)
 {
 	unsigned char	*padded;
 	size_t			new_size;
@@ -222,11 +228,36 @@ void ecb_process_input(t_cmd *opt, t_uc **input, t_uc **output, size_t *size)
 	while (*size < new_size)
 		padded[(*size)++] = pad_byte;
 	ecb_crypto(input, *size, (*opt).master_key, DES_ENCRYPT);
-	*output = ft_memalloc(*size + 1);
-	ft_memcpy(*output, *input, *size);
-
+	if ((*opt).b64 == 1)
+	{
+		*output = base64encode(*input, size);
+		free(*input);
+	}
+	else
+		*output = *input;
 }
 
+void ecb_decrypt_input(t_cmd *opt, t_uc **input, t_uc **output, size_t *size)
+{
+	unsigned char	pad_byte;
+	size_t			new_size;
+	int				flag;
+
+	if ((*opt).b64 == 1)
+		*input = base64decode(*input, size);
+	ecb_crypto(input, *size, (*opt).master_key, DES_DECRYPT);
+	pad_byte = *input[(*size)- 1];
+	if ((pad_byte >= 1) && (pad_byte <= 8))
+	{
+		flag = 0;
+		new_size = *size - pad_byte;
+		while ((*input[new_size] == pad_byte) && (new_size < *size))
+			new_size++;
+		if (new_size == *size)
+			(*size) -= pad_byte;
+	}
+	*output = *input;
+}
 
 int	cmd_ecb(int ac, char **av)
 {
@@ -240,8 +271,10 @@ int	cmd_ecb(int ac, char **av)
 	if (opt.print == 1)
 		ecb_print_key(opt.master_key);
 	get_input(&opt, &input, &size);
-	ecb_process_input(&opt, &input, &output, &size);
-	free(input);
+	if (opt.dec == 1)
+		ecb_decrypt_input(&opt, &input, &output, &size);
+	else
+		ecb_encrypt_input(&opt, &input, &output, &size);
 	if ((opt.output == NULL) || ((opt.output) && (ft_strequ(opt.output,"-"))))
 		write(1, output, size);
 	else

@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 22:21:23 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/18 19:16:22 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/18 23:34:35 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,8 @@ void	putfilecontents(char *filename, t_uc *data, size_t size);
 void	quit(int errnum, void *memory);
 void	show_options(char *s);
 void ecb_crypto(t_uc **input, size_t size, t_ul master_key, int action);
-void ecb_process_input(t_cmd *opt, t_uc **input, t_uc **output, size_t *size);
+void ecb_decrypt_input(t_cmd *opt, t_uc **input, t_uc **output, size_t *size);
+void ecb_encrypt_input(t_cmd *opt, t_uc **input, t_uc **output, size_t *size);
 void ecb_put_eight_bytes(t_uc *data, t_ul ul64);
 void get_input(t_cmd *opt, unsigned char **input, size_t *size);
 

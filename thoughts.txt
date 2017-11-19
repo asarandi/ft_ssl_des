@@ -6,9 +6,14 @@
 #    By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/11/17 21:53:25 by asarandi          #+#    #+#              #
-#    Updated: 2017/11/17 22:28:26 by asarandi         ###   ########.fr        #
+#    Updated: 2017/11/19 00:58:26 by asarandi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+-- implement line breaks in base64 output?
+-- remove line breaks before decoding base64?
+
+
 
 the subject pdf file is not very clear; 
 its asking to implement the -k flag,
