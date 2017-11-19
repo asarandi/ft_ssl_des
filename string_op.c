@@ -6,13 +6,13 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 23:47:10 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/17 23:39:04 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/18 13:13:51 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl.h"
 
-char	*ft_strtolower(char *s)
+unsigned char	*ft_strtolower(unsigned char *s)
 {
 	int	i;
 

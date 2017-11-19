@@ -6,19 +6,19 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/18 00:05:45 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/18 00:09:55 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/18 18:04:50 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ssl.h"
 
-int				is_valid_hex_key(char *s)
+int				is_valid_hex_key(unsigned char *s)
 {
 	int	i;
 
 	i = 0;
 	s = ft_strtolower(s);
-	while (s[i])
+	while (s[i] != 0)
 	{
 		if ((s[i] >= '0') && (s[i] <= '9'))
 			i++;
@@ -30,7 +30,7 @@ int				is_valid_hex_key(char *s)
 	return (1);
 }
 
-unsigned long	text_to_ul64(char *s)
+unsigned long	text_to_ul64(unsigned char *s)
 {
 	int				i;
 	int				j;
@@ -52,7 +52,8 @@ unsigned long	text_to_ul64(char *s)
 	return (result);
 }
 
-unsigned long	hex_to_ul64(char *s)
+
+unsigned long	hex_to_ul64_openssl(unsigned char *s)
 {
 	int				i;
 	int				j;
@@ -67,6 +68,34 @@ unsigned long	hex_to_ul64(char *s)
 		c = s[j];
 		if (s[j])
 			j++;
+		result <<= 4;
+		if ((c >= '0') && (c <= '9'))
+			result += (c - '0');
+		if ((c >= 'a') && (c <= 'f'))
+			result += ((c - 'a') + 10);
+		i++;
+	}
+	return (result);
+}
+
+unsigned long	hex_to_ul64(unsigned char *s)
+{
+	int				i;
+	int				j;
+	unsigned long	result;
+	unsigned char	c;
+
+	s = ft_strtolower(s);
+	i = 0;
+	j = 0;
+	while (i < 16)
+	{
+		c = s[j++];
+		if ((j > ft_strlen((char *)s)) && (j % 2 == 1))
+		{
+			j = 0;
+			c = s[j++];
+		}
 		result <<= 4;
 		if ((c >= '0') && (c <= '9'))
 			result += (c - '0');

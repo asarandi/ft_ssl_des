@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 22:20:45 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/18 01:48:16 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/18 20:08:25 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@ void	init_options(t_cmd *opt)
 	(*opt).enc = 0;
 	(*opt).dec = 0;
 	(*opt).b64 = 0;
+	(*opt).print = 0;
+	(*opt).master_key = 0;
 	(*opt).key = NULL;
 	(*opt).iv = NULL;
 	(*opt).input = NULL;
@@ -32,7 +34,7 @@ void	quit(int errnum, void *memory)
 	exit(EXIT_FAILURE);
 }
 
-unsigned char	*read_stdin(size_t *count)
+unsigned char	*stdin_read_eof(size_t *count)
 {
 	unsigned char	*buffer;
 	unsigned char	*newbuf;
@@ -72,15 +74,13 @@ void	show_options(char *s)
 	ft_putstr("-a             base64 encode/decode\n");
 	ft_putstr("-k             key in hex is the next argument\n");
 	ft_putstr("-v             iv in hex is the next argument\n");
+	ft_putstr("-p             print the iv/key\n");
 	exit(0);
 }
 
-void	get_options(int ac, char **av, t_cmd *opt)
+void	get_options(int i, int ac, char **av, t_cmd *opt)
 {
-	int		i;
-
 	init_options(opt);
-	i = 2;
 	while (i < ac)
 	{
 		if (ft_strequ(av[i], "-e"))
@@ -89,6 +89,8 @@ void	get_options(int ac, char **av, t_cmd *opt)
 			(*opt).dec = 1;
 		else if (ft_strequ(av[i], "-a"))
 			(*opt).b64 = 1;
+		else if (ft_strequ(av[i], "-p"))
+			(*opt).print = 1;
 		else if ((ft_strequ(av[i], "-i")) && (av[i + 1]))
 			(*opt).input = av[++i];
 		else if ((ft_strequ(av[i], "-o")) && (av[i + 1]))
@@ -107,7 +109,7 @@ void get_input(t_cmd *opt, unsigned char **input, size_t *size)
 {
 	if (((*opt).input == NULL) || 
 			(((*opt).input) && (ft_strequ((*opt).input,"-"))))
-		*input = read_stdin(size);
+		*input = stdin_read_eof(size);
 	else
 		*input = getfilecontents((*opt).input, size);
 }
@@ -118,59 +120,144 @@ int	cmd_cbc(int ac, char **av)
 }
 
 
-unsigned long	ecb_read_password()
+unsigned char	*stdin_read_line(size_t *count)
 {
-	unsigned char	*pw1;
-	unsigned char	*pw2;
-	unsigned long	mk1;
-	unsigned long	mk2;
+	unsigned char	*buffer;
+	ssize_t			r;
 
-	pw1 = read_stdin(&mk1);//getpass("enter des-ecb encryption password:");
-	mk1 = text_to_ul64((char *)pw1);
-	pw2 = read_stdin(&mk2);//getpass("Verifying - enter des-ecb encryption password:");
-	mk2 = text_to_ul64((char *)pw2);
-	if (mk1 == mk2)
+	if ((buffer = ft_memalloc(128)) == NULL)
+		quit(errno, NULL);
+	*count = 0;
+	r = 1;
+	while (r != 0)
 	{
-		return(mk1);
+		if ((r = read(0, &buffer[*count], 1)) == -1)
+			quit(errno, buffer);
+		if ((buffer[*count] == '\n') || (buffer[*count] == '\r'))
+		{
+			buffer[*count] = 0;
+			break ;
+		}
+		*count += r;
+		if (*count > 127)
+			break ;
 	}
-	ft_putstr("Verify failure\nbad password read\n");
+	return (buffer);
+}
+
+
+
+void	ecb_hex_key_invalid_format(void *memory)
+{
+	if (memory != NULL)
+		free(memory);
+	ft_putstr("non-hex digit\ninvalid hex key value\n");
 	exit(0);
+}
+
+/*
+**  the subject is asking to pad short keys with same digits,
+**  so key '123' becomes 0x1230123012301230
+**  the key 'ABCD' becomes 0xabcdabcdabcdabcd
+**
+**  in openssl a short key is padded with 0's
+**  so key '123' in openssl would be 0x1230000000000000
+**  and key 'ABCD' in openssl wouble be 0xabcd000000000000
+**
+**  to make the project compatible with openssl
+**  change 'hex_to_ul64' to 'hex_to_ul64_openssl'
+**
+**  use the -p option to show the key being used
+*/
+
+unsigned long	ecb_get_key(t_cmd *opt)
+{
+	unsigned char	*str_key;
+	unsigned long	size;
+
+	if ((*opt).key == NULL)
+	{
+		ft_putstr("enter des key in hex: ");
+		str_key = stdin_read_line(&size);
+		if (is_valid_hex_key(str_key))
+		{
+			size = hex_to_ul64_openssl(str_key);
+			free(str_key);
+			return(size);
+		}
+		else
+			ecb_hex_key_invalid_format(str_key);
+	}
+	else
+	{
+		if (is_valid_hex_key((unsigned char *)(*opt).key))
+			return(hex_to_ul64_openssl((unsigned char *)(*opt).key));
+		else
+			ecb_hex_key_invalid_format(NULL);
+	}
 	return (0);
 }
 
-unsigned long	ecb_process_key(t_cmd *opt)
+void	ecb_print_key(unsigned long master_key)
 {
-	return (0);
+	ft_putstr("key=");
+	ul64hex_to_stdout(master_key);
+	ft_putstr("\n");
+}
+
+
+void ecb_process_input(t_cmd *opt, t_uc **input, t_uc **output, size_t *size)
+{
+	unsigned char	*padded;
+	size_t			new_size;
+	unsigned char	pad_byte;
+
+	new_size = ((*size / 8) + 1) * 8;
+	pad_byte = new_size - *size;
+	if ((padded = ft_memalloc(new_size + 1)) == NULL)
+		quit(errno, *input);
+	ft_memcpy(padded, *input, *size);
+	free(*input);
+	*input = padded;
+	while (*size < new_size)
+		padded[(*size)++] = pad_byte;
+	ecb_crypto(input, *size, (*opt).master_key, DES_ENCRYPT);
+	*output = ft_memalloc(*size + 1);
+	ft_memcpy(*output, *input, *size);
+
 }
 
 
 int	cmd_ecb(int ac, char **av)
 {
-	unsigned long	master_key;
+	unsigned char	*input;
+	unsigned char	*output;
+	size_t			size;
 	t_cmd			opt;
 
-	get_options(ac, av, &opt);
-	
-	if (opt.key == NULL)
-		master_key = ecb_read_password();
+	get_options(2, ac, av, &opt);
+	opt.master_key = ecb_get_key(&opt);
+	if (opt.print == 1)
+		ecb_print_key(opt.master_key);
+	get_input(&opt, &input, &size);
+	ecb_process_input(&opt, &input, &output, &size);
+	free(input);
+	if ((opt.output == NULL) || ((opt.output) && (ft_strequ(opt.output,"-"))))
+		write(1, output, size);
 	else
-		master_key = ecb_process_key(&opt);
-
-
-
-
-
+		putfilecontents(opt.output, output, size);
+	free(output);
 	return (0);
 }
 
 void	cmd_base64(int ac, char **av)
 {
-	size_t			size;
 	unsigned char	*input;
 	unsigned char	*output;
+	size_t			size;
 	t_cmd			opt;
 
-	get_options(ac, av, &opt);
+	get_options(2, ac, av, &opt);
 	get_input(&opt, &input, &size);
 	if (opt.dec == 1)
 		output = base64decode(input, &size);
@@ -182,7 +269,6 @@ void	cmd_base64(int ac, char **av)
 	else
 		putfilecontents(opt.output, output, size);
 	free(output);
-
 }
 
 int	list_commands(int ac, char **av)

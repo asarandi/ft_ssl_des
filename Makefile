@@ -6,14 +6,14 @@
 #    By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/11/14 21:58:12 by asarandi          #+#    #+#              #
-#    Updated: 2017/11/17 21:30:01 by asarandi         ###   ########.fr        #
+#    Updated: 2017/11/18 17:40:38 by asarandi         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME	= ft_ssl
 CC		= gcc
 CFLAGS	= -Wall -Werror -Wextra
-SRC		= $(filter-out deas.c, $(wildcard *.c))
+SRC		= $(wildcard *.c)
 OBJ		= $(SRC:%.c=%.o)
 
 all: $(NAME)
