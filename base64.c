@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/09/27 20:14:04 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/19 01:38:50 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/20 00:39:05 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,14 +61,18 @@ size_t			b64dec_algo(t_uc *input, t_uc *output, size_t size)
 unsigned char	*base64decode(unsigned char *input, size_t *size)
 {
 	unsigned char	*output;
+	unsigned char	*formatted;
 	size_t			i;
 
-	if (input[*size - 1] == '\n')
-		input[--(*size)] = 0;
+	formatted = b64_remove_newlines(input, size);
 	i = (*size / 4) * 3;
 	if ((output = ft_memalloc(i + 6)) == NULL)
+	{
+		free(formatted);
 		quit(errno, input);
-	*size = b64dec_algo(input, output, *size);
+	}
+	*size = b64dec_algo(formatted, output, *size);
+	free(formatted);
 	return (output);
 }
 
@@ -118,8 +122,9 @@ unsigned char	*base64encode(unsigned char *input, size_t *size)
 		quit(errno, input);
 	}
 	b64enc_algo(padded, output, *size);
-	*size = ft_strlen((char *)output);
-	output[(*size)++] = '\n';
 	free(padded);
-	return (output);
+	(*size) = i;
+	padded = b64_insert_newlines(output, size);
+	free(output);
+	return (padded);
 }

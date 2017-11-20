@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 22:21:23 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/19 17:37:53 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/20 00:39:54 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 # define BUF_SIZE 1024
 # define DES_ENCRYPT 0
 # define DES_DECRYPT 1
+# define BASE64_LINE_LENGTH 64
 
 typedef unsigned long	t_ul;
 typedef unsigned char	t_uc;
@@ -58,6 +59,8 @@ extern unsigned char	g_s7_box[];
 extern unsigned char	g_s8_box[];
 extern unsigned char	*g_s_boxes[];
 
+t_uc					*b64_insert_newlines(unsigned char *in, size_t *sz);
+t_uc					*b64_remove_newlines(unsigned char *in, size_t *sz);
 int						ft_strequ(char const *s1, char const *s2);
 int						is_valid_hex_key(unsigned char *s);
 int						main(int ac, char **av);

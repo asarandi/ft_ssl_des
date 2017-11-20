@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/19 14:46:09 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/19 15:08:49 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/19 23:54:58 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@ void			cbc_encrypt(t_uc **input, size_t size, t_cmd *opt, int enc)
 	iv = (*opt).master_iv;
 	while (i < size)
 	{
-		data = ecb_get_eight_bytes(*input + i);
+		data = ecb_get_eight_bytes((*input) + i);
 		data ^= iv;
 		data = ecb_process_block(data, keys);
 		iv = data;
-		ecb_put_eight_bytes(*input + i, data);
+		ecb_put_eight_bytes((*input) + i, data);
 		i += 8;
 	}
 }
@@ -46,12 +46,12 @@ void			cbc_decrypt(t_uc **input, size_t size, t_cmd *opt, int enc)
 	iv = (*opt).master_iv;
 	while (i < size)
 	{
-		data = ecb_get_eight_bytes(*input + i);
+		data = ecb_get_eight_bytes((*input) + i);
 		next_iv = data;
 		data = ecb_process_block(data, keys);
 		data ^= iv;
 		iv = next_iv;
-		ecb_put_eight_bytes(*input + i, data);
+		ecb_put_eight_bytes((*input) + i, data);
 		i += 8;
 	}
 }

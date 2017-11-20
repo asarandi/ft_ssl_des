@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/19 02:31:02 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/19 14:42:24 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/19 23:55:48 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ void	cmd_cbc(int ac, char **av)
 		write(1, output, size);
 	else
 		putfilecontents(opt.output, output, size);
-	free(output);
+	free(input);
 }
 
 void	cmd_ecb(int ac, char **av)

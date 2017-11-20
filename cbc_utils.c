@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/19 02:37:41 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/19 15:07:23 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/20 00:30:02 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ void	cbc_encrypt_input(t_cmd *opt, t_uc **input, t_uc **output, size_t *size)
 	free(*input);
 	*input = padded;
 	while (*size < new_size)
-		padded[(*size)++] = pad_byte;
+		(*input)[(*size)++] = pad_byte;
 	cbc_encrypt(input, *size, opt, DES_ENCRYPT);
 	if ((*opt).b64 == 1)
 	{
@@ -87,17 +87,19 @@ void	cbc_decrypt_input(t_cmd *opt, t_uc **input, t_uc **output, size_t *size)
 {
 	unsigned char	pad_byte;
 	size_t			new_size;
-	int				flag;
 
 	if ((*opt).b64 == 1)
-		*input = base64decode(*input, size);
+	{
+		*output = base64decode(*input, size);
+		free(*input);
+		*input = *output;
+	}
 	cbc_decrypt(input, *size, opt, DES_DECRYPT);
-	pad_byte = *input[(*size) - 1];
+	pad_byte = (*input)[(*size) - 1];
 	if ((pad_byte >= 1) && (pad_byte <= 8))
 	{
-		flag = 0;
 		new_size = *size - pad_byte;
-		while ((*input[new_size] == pad_byte) && (new_size < *size))
+		while (((*input)[new_size] == pad_byte) && (new_size < *size))
 			new_size++;
 		if (new_size == *size)
 			(*size) -= pad_byte;
