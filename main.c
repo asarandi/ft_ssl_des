@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 22:20:45 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/19 12:47:26 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/20 01:38:09 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	parse_commands(int ac, char **av)
 {
 	if (ft_strequ(av[1], "base64"))
 		cmd_base64(ac, av);
-	else if (ft_strequ(av[1], "des-ecb"))
+	else if ((ft_strequ(av[1], "des-ecb")) || (ft_strequ(av[1], "des")))
 		cmd_ecb(ac, av);
 	else if (ft_strequ(av[1], "des-cbc"))
 		cmd_cbc(ac, av);
