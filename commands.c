@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/19 02:31:02 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/19 02:33:13 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/19 14:42:24 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,31 @@ void	get_input(t_cmd *opt, unsigned char **input, size_t *size)
 		*input = getfilecontents((*opt).input, size);
 }
 
-int		cmd_cbc(int ac, char **av)
+void	cmd_cbc(int ac, char **av)
 {
-	char *abc;
+	unsigned char	*input;
+	unsigned char	*output;
+	size_t			size;
+	t_cmd			opt;
 
-	abc = av[ac - 1];
-	return (0);
+	get_options(2, ac, av, &opt);
+	opt.master_key = ecb_get_key(&opt);
+	opt.master_iv = cbc_get_iv(&opt);
+	if (opt.print == 1)
+		cbc_print_key(opt);
+	get_input(&opt, &input, &size);
+	if (opt.dec == 1)
+		cbc_decrypt_input(&opt, &input, &output, &size);
+	else
+		cbc_encrypt_input(&opt, &input, &output, &size);
+	if ((opt.output == NULL) || ((opt.output) && (ft_strequ(opt.output, "-"))))
+		write(1, output, size);
+	else
+		putfilecontents(opt.output, output, size);
+	free(output);
 }
 
-int		cmd_ecb(int ac, char **av)
+void	cmd_ecb(int ac, char **av)
 {
 	unsigned char	*input;
 	unsigned char	*output;
@@ -50,7 +66,6 @@ int		cmd_ecb(int ac, char **av)
 	else
 		putfilecontents(opt.output, output, size);
 	free(output);
-	return (0);
 }
 
 void	cmd_base64(int ac, char **av)
