@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/18 00:05:45 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/19 01:59:37 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/20 14:00:36 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ unsigned long	text_to_ul64(unsigned char *s)
 	return (result);
 }
 
-unsigned long	hex_to_ul64_openssl(unsigned char *s)
+unsigned long	hex_to_ul64(unsigned char *s)
 {
 	int				i;
 	int				j;
@@ -68,35 +68,6 @@ unsigned long	hex_to_ul64_openssl(unsigned char *s)
 		c = s[j];
 		if (s[j])
 			j++;
-		result <<= 4;
-		if ((c >= '0') && (c <= '9'))
-			result += (c - '0');
-		if ((c >= 'a') && (c <= 'f'))
-			result += ((c - 'a') + 10);
-		i++;
-	}
-	return (result);
-}
-
-unsigned long	hex_to_ul64(unsigned char *s)
-{
-	int				i;
-	size_t			j;
-	unsigned long	result;
-	unsigned char	c;
-
-	s = ft_strtolower(s);
-	i = 0;
-	j = 0;
-	result = 0;
-	while (i < 16)
-	{
-		c = s[j++];
-		if ((j > ft_strlen((char *)s)) && (j % 2 == 1))
-		{
-			j = 0;
-			c = s[j++];
-		}
 		result <<= 4;
 		if ((c >= '0') && (c <= '9'))
 			result += (c - '0');

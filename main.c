@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/14 22:20:45 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/20 01:38:09 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/20 14:41:09 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ void	list_commands(char **av)
 	ft_putstr("des\n");
 	ft_putstr("des-ecb\n");
 	ft_putstr("des-cbc\n");
+	ft_putstr("des3\ndes3-ecb\ndes3-cbc\n");
 }
 
 void	parse_commands(int ac, char **av)
@@ -44,8 +45,12 @@ void	parse_commands(int ac, char **av)
 		cmd_ecb(ac, av);
 	else if (ft_strequ(av[1], "des-cbc"))
 		cmd_cbc(ac, av);
-	else if (ft_strequ(av[1], "des"))
-		cmd_ecb(ac, av);
+	else if ((ft_strequ(av[1], "des3")) || (ft_strequ(av[1], "des3-cbc")))
+		cmd_des3cbc(ac, av);
+	else if (ft_strequ(av[1], "des-ede3-cbc"))
+		cmd_des3cbc(ac, av);
+	else if ((ft_strequ(av[1], "des-ede3")) || (ft_strequ(av[1], "des3-ecb")))
+		cmd_des3ecb(ac, av);
 	else
 		list_commands(av);
 }

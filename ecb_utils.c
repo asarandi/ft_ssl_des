@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/19 02:37:41 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/20 00:27:57 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/20 14:45:00 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,9 @@ t_ul	ecb_get_key(t_cmd *opt)
 		str_key = stdin_read_line(&size);
 		if (is_valid_hex_key(str_key))
 		{
-			size = hex_to_ul64_openssl(str_key);
+			(*opt).master_key = hex_to_ul64(str_key);
 			free(str_key);
-			return (size);
+			return ((*opt).master_key);
 		}
 		else
 			ecb_hex_key_invalid_format(str_key);
@@ -56,7 +56,7 @@ t_ul	ecb_get_key(t_cmd *opt)
 	else
 	{
 		if (is_valid_hex_key((unsigned char *)(*opt).key))
-			return (hex_to_ul64_openssl((unsigned char *)(*opt).key));
+			return (hex_to_ul64((unsigned char *)(*opt).key));
 		else
 			ecb_hex_key_invalid_format(NULL);
 	}

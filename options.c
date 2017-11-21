@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/19 02:27:37 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/19 02:27:49 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/20 13:45:01 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,10 @@ void	init_options(t_cmd *opt)
 	(*opt).b64 = 0;
 	(*opt).print = 0;
 	(*opt).master_key = 0;
+	(*opt).master_iv = 0;
+	(*opt).des3_key1 = 0;
+	(*opt).des3_key2 = 0;
+	(*opt).des3_key3 = 0;
 	(*opt).key = NULL;
 	(*opt).iv = NULL;
 	(*opt).input = NULL;

@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/19 02:37:41 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/20 00:30:02 by asarandi         ###   ########.fr       */
+/*   Updated: 2017/11/20 14:44:22 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,9 @@ t_ul	cbc_get_iv(t_cmd *opt)
 		str_iv = stdin_read_line(&size);
 		if (is_valid_hex_key(str_iv))
 		{
-			size = hex_to_ul64_openssl(str_iv);
+			(*opt).master_iv = hex_to_ul64(str_iv);
 			free(str_iv);
-			return (size);
+			return ((*opt).master_iv);
 		}
 		else
 			cbc_hex_iv_invalid_format(str_iv);
@@ -41,7 +41,7 @@ t_ul	cbc_get_iv(t_cmd *opt)
 	else
 	{
 		if (is_valid_hex_key((unsigned char *)(*opt).iv))
-			return (hex_to_ul64_openssl((unsigned char *)(*opt).iv));
+			return (hex_to_ul64((unsigned char *)(*opt).iv));
 		else
 			cbc_hex_iv_invalid_format(NULL);
 	}
