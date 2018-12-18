@@ -12,7 +12,7 @@
 
 NAME	= ft_ssl
 CC		= gcc
-CFLAGS	= -O3 -Wall -Werror -Wextra
+CFLAGS	= -O2 -Wall -Werror -Wextra -Wno-unused-result
 SRC		=	b64_utils.c \
 			base64.c \
 			cbc.c \

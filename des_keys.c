@@ -53,6 +53,7 @@ void			make_half_keys(unsigned long half_keys[16], t_ul starter)
 	int				i;
 
 	i = 0;
+	new_half = 0;
 	while (i < 16)
 	{
 		shift = g_left_shifts[i];
