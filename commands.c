@@ -6,7 +6,7 @@
 /*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/11/19 02:31:02 by asarandi          #+#    #+#             */
-/*   Updated: 2017/11/20 16:22:11 by asarandi         ###   ########.fr       */
+/*   Updated: 2018/12/26 10:54:59 by asarandi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,14 @@ void	get_input(t_cmd *opt, unsigned char **input, size_t *size)
 					(((*opt).input) && (ft_strequ((*opt).input, "-"))))
 	{
 		*input = stdin_read_eof(size);
-		if (*size < 1)
-		{
-			ft_putstr("no input data\n");
-			exit(0);
-		}
 	}
 	else
 		*input = getfilecontents((*opt).input, size);
+	if (*size < 1)
+	{
+		ft_putstr("no input data\n");
+		exit(0);
+	}
 }
 
 void	cmd_cbc(int ac, char **av)
