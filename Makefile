@@ -10,45 +10,40 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= ft_ssl
-CC		= gcc
-CFLAGS	= -O2 -Wall -Werror -Wextra -Wno-unused-result
-SRC		=	b64_utils.c \
-			base64.c \
-			cbc.c \
-			cbc_utils.c \
-			commands.c \
-			des.c \
-			des3.c \
-			des3cbc.c \
-			des3ecb.c \
-			des_keys.c \
-			des_tables.c \
-			ecb.c \
-			ecb_utils.c \
-			file_op.c \
-			main.c \
-			memory_op.c \
-			options.c \
-			stdin_read.c \
-			string_op.c \
-			text_op.c
-OBJ		= $(SRC:%.c=%.o)
+NAME = ft_ssl
+CFLAGS += -g -Wall -Werror -Wextra -Wno-unused-result
+LDFLAGS += -g
+SRC = b64_utils.c \
+    base64.c \
+    cbc.c \
+    cbc_utils.c \
+    commands.c \
+    des.c \
+    des3.c \
+    des3cbc.c \
+    des3ecb.c \
+    des_keys.c \
+    des_tables.c \
+    ecb.c \
+    ecb_utils.c \
+    file_op.c \
+    main.c \
+    memory_op.c \
+    options.c \
+    stdin_read.c \
+    string_op.c \
+    text_op.c
+OBJ = $(SRC:%.c=%.o)
 
 all: $(NAME)
 
-$(NAME):
-	$(CC) $(CFLAGS) -c $(SRC)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
-
-debug: fclean
-	$(CC) -g -c $(SRC)
-	$(CC) -g $(OBJ) -o debug
+$(NAME): $(OBJ)
+	$(CC) $(LDFLAGS) -o $@ $^
 
 clean:
-	rm -rf $(OBJ)
+	$(RM) $(OBJ)
 
 fclean: clean
-	rm -rf $(NAME) debug
+	$(RM) $(NAME)
 
 re: fclean all
