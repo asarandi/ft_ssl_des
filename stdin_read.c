@@ -27,7 +27,7 @@ unsigned char	*stdin_read_eof(size_t *count)
 		if ((r = read(0, &buffer[*count], 1024 - (*count % 1024))) == -1)
 			quit(errno, buffer);
 		*count += r;
-		if ((*count) && (*count % BUF_SIZE == 0))
+		if ((r) && (*count) && (*count % BUF_SIZE == 0))
 		{
 			if ((newbuf = ft_memalloc(*count + BUF_SIZE)) == NULL)
 				quit(errno, buffer);
